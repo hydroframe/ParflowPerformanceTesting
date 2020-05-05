@@ -6,7 +6,10 @@
 **/run_tests.tcl
 **/pfbdiff.py
 **/delete_logs.tcl
-**/solver_params.tcl
+clayl/**/solver_params.tcl
+conus-ru/**/solver_params.tcl
+conus-tfg/**/solver_params.tcl
+LW/**/solver_params.tcl
 Outputs/
 outputs/
 !solver_configs/case*/
