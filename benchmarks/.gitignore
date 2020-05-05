@@ -7,8 +7,8 @@
 **/pfbdiff.py
 **/delete_logs.tcl
 clayl/**/solver_params.tcl
-conus-ru/**/solver_params.tcl
-conus-tfg/**/solver_params.tcl
+conus_ru/**/solver_params.tcl
+conus_tfg/**/solver_params.tcl
 LW/**/solver_params.tcl
 Outputs/
 outputs/

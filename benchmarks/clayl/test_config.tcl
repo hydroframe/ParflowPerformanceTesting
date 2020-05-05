@@ -1,9 +1,6 @@
 # configuration file for Parflow test domain
 
 
-# Load the global configuration
-#source ../global_config.tcl
-
 # set the number of runs that will be averaged
 set number_of_runs 1
 

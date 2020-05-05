@@ -13,8 +13,7 @@
  * purge_log_files.tcl - script to purge all the log files generated from a run
  * exec_test_suite.tcl - wrapper script to run all tests in a domain from root of test directory
  * run_test.tcl - script to run a single solver configuration for a test domain
- * run_tests.tcl - wrapper script to run all tests for a domain from within domain directory
- * global_config.tcl - store location of parflow test directory to use for LW and LW_var_dz testing
+ * run_tests.tcl - wrapper script to run all tests for a domain from within domain directory 
  * README.md - this file
  * pfbdiff.py - python script to compare output files for differences
  * Domain SubFolders - Each problem domain is given its own folder
@@ -25,25 +24,22 @@
  * Domain SubFolders/validate_results.tcl - Script to run any post test validations of output data
  
 
+## QUICKSTART
+From this directory, run:
+```
+$ tclsh exec_test_suite.tcl LW 1 1 1 12
+```
+
 ## RUNNING
 
  You must have Parflow installed and an environment variable named $PARFLOW_DIR which points to the directory where the 
- bin folder is located (standard Parflow requirements).
+ bin folder is located (standard Parflow requirements). 
  
- Update the file `global_config.tcl` with the location of the parflow source test directory `~/pfdir/parflow/test` for example.
- 
- Additionally, you will need the data for the Little Washita tests from the Parflow source directory. The default location
- in the Parflow source folder is tests/washita. The folder structure should be identical source.
- 
- Assuming the first two conditions have been met, you can run an individual test by changing directory into the Domain SubFolder,
- then running 
- ```bash
- $ tclsh run_test caseName P Q R T 
- ```
- where caseName is the name of a folder in the Domain Subfolder, P Q R are integers which define the computation grid,
- and T is the StopTime you want the simulation to use. 
- 
- To run all the test cases for a Domain, change directory to this folder (test directory) and run 
+ Python 3.4+ for post test validation
+
+ /usr/bin/time available
+
+ To run all the test cases for a Domain, from this folder run 
  ```bash
  $ tclsh exec_test_suite.tcl domainName P Q R T
  ```
@@ -62,7 +58,7 @@
  * Create a caseDefault test folder and place the original solver configurations in the solver_params.tcl there.
  * Copy any other test folders from existing test domain into new domain
  * Move the validation portion of the script to the validate_results.tcl script.
- * Insert the following code block to set the solver configurations at runtime:
+ * Insert the following code block to set the solver configurations at runtime: 
  ```tcl
  
  set runname <domainname>
@@ -109,7 +105,11 @@
    pfset Solver.Linear.Preconditioner.$Preconditioner.RAPType          $RAPType
  }
 ```
- 
+* add the following to the .gitignore:
+```
+<domainname>/**/solver_params.tcl
+```
+
 ## To Add or Change Solver Configurations for a Domain
 
 Modify the list of solver configurations defined in the subdomain's test.tcl file. 
