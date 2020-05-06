@@ -10,6 +10,9 @@ clayl/**/solver_params.tcl
 conus_ru/**/solver_params.tcl
 conus_tfg/**/solver_params.tcl
 LW/**/solver_params.tcl
+sinusoidal_tiny/**/solver_params.tcl
+sinusoidal_medium/**/solver_params.tcl
+sinusoidal_large/**/solver_params.tcl
 Outputs/
 outputs/
 !solver_configs/case*/
