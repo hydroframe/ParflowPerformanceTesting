@@ -5,9 +5,11 @@
 # checked and tested by SKo
 
 if { [llength $argv] != 4 } {
-  puts "Usage sinusoidal.tcl <Processes in P> <Processes in Q> <Processes in R> <Timesteps>"
+  puts "Usage sinusoidal_no_size_args.tcl <Processes in P> <Processes in Q> <Processes in R> <Timesteps>"
   exit 1
 }
+
+
 
 #---------------------------------------------------------
 # Import the ParFlow TCL package
@@ -17,6 +19,9 @@ package require parflow
 namespace import Parflow::*
 
 pfset FileVersion 4
+
+source solver_params.tcl
+source test_config.tcl
 
 #-----------------------------------------------------------------------------
 # Make a directory for the simulation and copy inputs into it
@@ -61,6 +66,10 @@ pfset ComputationalGrid.Lower.Z  0.0
 pfset ComputationalGrid.NX       $sinusoidal_NX
 pfset ComputationalGrid.NY       $sinusoidal_NY
 pfset ComputationalGrid.NZ       $sinusoidal_NZ
+
+set NX [pfget ComputationalGrid.NX]
+set NY [pfget ComputationalGrid.NY]
+set NZ [pfget ComputationalGrid.NZ]
 
 pfset ComputationalGrid.DX       $DX
 pfset ComputationalGrid.DY       $DY
@@ -313,7 +322,7 @@ pfset Geom.domain.ICPressure.Value                      -10.0
 pfset Geom.domain.ICPressure.RefGeom                    domain
 pfset Geom.domain.ICPressure.RefPatch                   z-upper
 
-----------------------------------------------------------------
+# ------------------------------------------------------------
 # Outputs
 # ------------------------------------------------------------
 #Writing output (all pfb):
@@ -375,6 +384,14 @@ pfset Solver.ROMIOhints romio.hints
 
 if {[info exists PCMatrixType]} {
 	pfset Solver.Linear.Preconditioner.PCMatrixType          $PCMatrixType
+}
+
+if {[info exists MaxIter]} {
+  pfset Solver.Linear.Preconditioner.$Preconditioner.MaxIter         $MaxIter
+}
+
+if {[info exists MaxLevels]} {
+  pfset Solver.Linear.Preconditioner.$Preconditioner.MaxLevels         $MaxLevels
 }
 
 if {[info exists Smoother]} {
