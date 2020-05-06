@@ -17,7 +17,7 @@ set sinusoidal_NY 5239
 set sinusoidal_NZ 5
 
 # set the runname for this test domain
-set runname pf_sinusoidal_41x41x50
+set runname pf_sinusoidal_4500x5239x5
 
 # define the Parflow run script file
 set scriptname sinusoidal_no_size_args.tcl
