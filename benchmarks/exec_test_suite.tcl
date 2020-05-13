@@ -2,6 +2,7 @@
 
 # @IJB This is stupid. I wrote this with 8.6 in mind, but 8.5 doesnt have lmap
 if { [info tclversion] < 8.6 } {
+  # Shamelessly stolen from https://en.wikibooks.org/wiki/Tcl_Programming/Examples
   proc lmap {_var list body} {
     upvar 1 $_var var
     set res {}
