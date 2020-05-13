@@ -5,7 +5,7 @@
 #source ../global_config.tcl
 
 # set the number of runs that will be averaged
-set number_of_runs 1
+set number_of_runs 5
 
 # set the directory where the parflow script will run from
 set test_run_dir ./
