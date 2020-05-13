@@ -1,4 +1,4 @@
-# Sinusoidal Large
+# Sinusoidal Medium
 Sinusoidal test case parameters to occupy a significant amount of memory while
 being relatively square in X-Y.
 Attempts to fill 50% of the recommended maximum memory allocation of 168 GiB on
