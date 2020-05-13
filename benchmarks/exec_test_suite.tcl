@@ -1,4 +1,15 @@
 #!/usr/bin/env tclsh
+
+# @IJB This is stupid. I wrote this with 8.6 in mind, but 8.5 doesnt have lmap
+if { [info tclversion] < 8.6 } {
+  proc lmap {_var list body} {
+    upvar 1 $_var var
+    set res {}
+    foreach var $list {lappend res [uplevel 1 $body]}
+    set res
+  }
+}
+
 # Expand command line arguments to individual variables
 lassign $argv suite P Q R T
 

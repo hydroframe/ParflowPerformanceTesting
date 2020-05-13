@@ -1,3 +1,14 @@
+
+# @IJB This is stupid. I wrote this with 8.6 in mind, but 8.5 doesnt have lmap
+if { [info tclversion] < 8.6 } {
+  proc lmap {_var list body} {
+    upvar 1 $_var var
+    set res {}
+    foreach var $list {lappend res [uplevel 1 $body]}
+    set res
+  }
+}
+
 #
 # run parflow script with test specific solver settings#
 #
