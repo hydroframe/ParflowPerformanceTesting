@@ -58,13 +58,24 @@ if { ![file exists $suite_outputs] } {
 # Create (hopefully) unique directory for this execution of the test suite
 file mkdir $unique_dir
 # Copy all necessary test framework assets
-foreach asset [concat $test_framework_assets $test_suite_assets] {
-  # Link absolute path to asset to $unique_dir/filename
-  # This reduces the amount of replicated data on disk, which can be substantial
-  # Assumes that assets are immutable
-  file link [file join $unique_dir [file tail $asset]] $asset
-  # Previously:
-  # file copy -force $asset $unique_dir/.
+
+# possible modes:
+#   copy: Literally copy all files and directories
+#   link: Link all
+set asset_mode "copy"
+
+if { $asset_mode == "copy" } {
+  file copy -force {*}[concat $test_framework_assets $test_suite_assets] $unique_dir
+} elseif { $asset_mode == "link" } {
+  foreach asset [concat $test_framework_assets $test_suite_assets] {
+    # Link absolute path to asset to $unique_dir/filename
+    # This reduces the amount of replicated data on disk, which can be substantial
+    # Assumes that assets are immutable
+    file link [file join $unique_dir [file tail $asset]] $asset
+  }
+} else {
+  puts "Invalid asset_mode setting: $asset_mode"
+  exit
 }
 
 # Delete any existing solver configuration directories (this is now unnecessary)

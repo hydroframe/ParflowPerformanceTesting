@@ -24,13 +24,40 @@ proc run_test { test_directory P Q R T } {
   # get the test configuration file for the domain
   source test_config.tcl
 
-  # copy the parflow test,  solver config, diff compare, and validation
-  # scripts to the run directory
-  file copy -force $scriptname $test_run_dir/.
-  file copy -force $test_directory/solver_params.tcl $test_run_dir/.
-  file copy -force pfbdiff.py $test_run_dir/.
-  file copy -force validate_results.tcl $test_run_dir/.
-  file copy -force delete_logs.tcl $test_run_dir/.
+  # Create absolute paths
+  # Where the main test directory is, including intially copied assets and case* directories
+  set test_root_directory [file normalize [pwd]]
+  # Directory where test script is run
+  set test_run_dir [file normalize $test_run_dir]
+  # The case* directory
+  set test_directory [file normalize [ file join $test_run_dir $test_directory]]
+  # Directory where output files reside after running test script
+  set output_dir [file normalize [file join $test_run_dir $output_dir]]
+  # Directory in case* directory where individual trial directories live.
+  set test_trials_directory [file join $test_directory trials]
+
+  # Input assets files
+  # assets that will need to be moved into the test_dir before running
+  set test_dir_assets [concat [file join $test_directory/solver_params.tcl] [lmap file "$scriptname delete_logs.tcl" {file join $test_root_directory $file}]]
+  # Assets that will need to be moved into the output_dir after running
+  set output_dir_assets [lmap file "pftest.tcl pfbdiff.py validate_results.tcl" {file join $test_root_directory $file}]
+
+  # Output files
+  # Files to only copy once
+  set per_test_files [lmap extension "out.pftcl out.pfmetadata pfidb" { file join $output_dir [ concat "$runname.$extension" ] }]
+  # Files to copy every trial
+  set per_trial_files [lmap extension "out.kinsol.log out.log out.timing.csv out.txt" {  file join $output_dir [ concat "$runname.$extension" ] }]
+
+  # Create trials directory
+  file mkdir $test_trials_directory
+
+  # foreach asset $test_dir_assets {
+  #   puts "$asset -> $test_run_dir"
+  # }
+
+  # foreach asset $output_dir_assets {
+  #   puts "$asset -> $output_dir"
+  # }
 
   # write a log file to the $test_directory
   # include Date/Time of run, number of runs, PQR, machine name, mem and cpu data
@@ -51,14 +78,8 @@ proc run_test { test_directory P Q R T } {
   puts $output_file "Environment:\n$env\n"
   close $output_file
 
-  # Create trials directory
-  set test_trials_directory [file join $test_directory trials]
-  file mkdir $test_trials_directory
-
-  # Files to copy every trial
-  set per_trial_files [lmap extension "out.kinsol.log out.log out.timing.csv out.txt" {file normalize [file join $output_dir [concat "$runname.$extension"]]}]
-  # Files to only copy once
-  set per_test_files [lmap extension "out.pftcl out.pfmetadata pfidb" {file normalize [file join $output_dir [concat "$runname.$extension"]]}]
+  # Copy tests assets
+  file copy -force {*}$test_dir_assets $test_run_dir/.
 
   # run the test
   cd $test_run_dir
@@ -71,26 +92,24 @@ proc run_test { test_directory P Q R T } {
   for { set i 1 } { $i <= $number_of_runs } { incr i } {
 
     # Create trial directory under the test's trials directory
-    set trial_dir [file join $test_trials_directory $i]
-    file mkdir $trial_dir
+    set trial_directory [file join $test_trials_directory $i]
+    file mkdir $trial_directory
 
     # Execute the test script
     # use time to clock the run externally of parlfow's internal timing
-    exec /usr/bin/time --verbose tclsh $scriptname $P $Q $R $T >& [file join $trial_dir run_time.log]
+    exec /usr/bin/time --verbose tclsh $scriptname $P $Q $R $T >& [file join $trial_directory run_time.log]
 
-    # Validate outputs and copy outputs
-    file copy -force validate_results.tcl $output_dir
+    # Copy output assets
+    file copy -force {*}$output_dir_assets $output_dir
 
-    set current_directory [pwd]
     cd $output_dir
 
     # Validate
-    exec tclsh validate_results.tcl >& $trial_dir/validation.log
-
-    cd $current_directory
+    exec tclsh validate_results.tcl >& $trial_directory/validation.log
+    cd $test_run_dir
 
     # Copy the output files of interest back for logging.
-    file copy -force {*}$per_trial_files $trial_dir
+    file copy -force {*}$per_trial_files $trial_directory
 
     if { $i == 1 } {
       # Copy the parflow databases and metadata settings for this run back for logging.
@@ -103,11 +122,13 @@ proc run_test { test_directory P Q R T } {
     # Delete outputs directory at the end of the trial
     file delete -force $output_dir
   }
+
+  cd $test_root_directory
 }
 
 # for calling script from command line
 if { $argc == 5 } {
-  lassign $argv test_dir P Q R T
-  set test_path [file join [pwd] $test_dir]
+  lassign $argv test_directory P Q R T
+  set test_path [file join [pwd] $test_directory]
   run_test $test_path $P $Q $R $T
 }

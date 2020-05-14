@@ -27,7 +27,7 @@ if { [llength $case_dirs] > 0 } {
     foreach dir $case_dirs {
         puts "  - Running $dir"
         # Set pat to test directory and run test
-        set test_path [file join [pwd] $dir]
+        set test_path [file normalize $dir]
         run_test $test_path $P  $Q  $R $T
     }
     puts "Finished tests."
