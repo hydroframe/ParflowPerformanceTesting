@@ -57,13 +57,13 @@ if { ![file exists $suite_outputs] } {
 }
 # Create (hopefully) unique directory for this execution of the test suite
 file mkdir $unique_dir
-# Copy all necessary test framework assets
 
+# Copy all necessary test framework assets
 # possible modes:
 #   copy: Literally copy all files and directories
 #   link: Link all
 set asset_mode "copy"
-
+# TODO figure out how to do recreate directory structure and create file links
 if { $asset_mode == "copy" } {
   file copy -force {*}[concat $test_framework_assets $test_suite_assets] $unique_dir
 } elseif { $asset_mode == "link" } {

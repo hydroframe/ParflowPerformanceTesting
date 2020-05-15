@@ -51,14 +51,6 @@ proc run_test { test_directory P Q R T } {
   # Create trials directory
   file mkdir $test_trials_directory
 
-  # foreach asset $test_dir_assets {
-  #   puts "$asset -> $test_run_dir"
-  # }
-
-  # foreach asset $output_dir_assets {
-  #   puts "$asset -> $output_dir"
-  # }
-
   # write a log file to the $test_directory
   # include Date/Time of run, number of runs, PQR, machine name, mem and cpu data
   set systemTime [clock seconds]
