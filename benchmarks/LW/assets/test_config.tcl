@@ -17,4 +17,3 @@ set scriptname LW_Test.tcl
 # output dir relative to test_run_dir
 # TODO: This should not be mirrored, only set once!
 set output_dir ./Outputs
-

@@ -18,7 +18,7 @@ set StopTime [lindex $argv 3]
 pfset     FileVersion    4
 
 #-----------------------------------------------------------------------------
-# Set Processor topology 
+# Set Processor topology
 #-----------------------------------------------------------------------------
 pfset Process.Topology.P        [lindex $argv 0]
 pfset Process.Topology.Q        [lindex $argv 1]
@@ -39,12 +39,10 @@ file copy -force "../../parflow_input/press.init.pfb"  .
 #CLM Inputs
 file copy -force "../../clm_input/drv_clmin.dat" .
 file copy -force "../../clm_input/drv_vegp.dat"  .
-file copy -force "../../clm_input/drv_vegm.alluv.dat"  . 
+file copy -force "../../clm_input/drv_vegm.alluv.dat"  .
 
 file delete correct_output
-file link -symbolic correct_output "../correct_output" 
-
-file copy -force "../validate_results.tcl" .
+file link -symbolic correct_output "../correct_output"
 
 puts "Files Copied"
 
@@ -53,15 +51,15 @@ puts "Files Copied"
 #-----------------------------------------------------------------------------
 pfset ComputationalGrid.Lower.X           0.0
 pfset ComputationalGrid.Lower.Y           0.0
-pfset ComputationalGrid.Lower.Z           0.0 
+pfset ComputationalGrid.Lower.Z           0.0
 
 pfset ComputationalGrid.DX                1000.0
 pfset ComputationalGrid.DY                1000.0
 pfset ComputationalGrid.DZ                2.0
 
-pfset ComputationalGrid.NX                41 
-pfset ComputationalGrid.NY                41 
-pfset ComputationalGrid.NZ                50  
+pfset ComputationalGrid.NX                41
+pfset ComputationalGrid.NY                41
+pfset ComputationalGrid.NZ                50
 
 
 #-----------------------------------------------------------------------------
@@ -76,12 +74,12 @@ pfset GeomInput.box_input.InputType      Box
 pfset GeomInput.box_input.GeomName      domain
 
 #-----------------------------------------------------------------------------
-# Domain Geometry 
+# Domain Geometry
 #-----------------------------------------------------------------------------
 pfset Geom.domain.Lower.X                        0.0
 pfset Geom.domain.Lower.Y                        0.0
 pfset Geom.domain.Lower.Z                        0.0
- 
+
 pfset Geom.domain.Upper.X                        41000.0
 pfset Geom.domain.Upper.Y                        41000.0
 pfset Geom.domain.Upper.Z                          100.0
@@ -499,7 +497,7 @@ pfset Solver.Linear.KrylovDimension                      70
 pfset Solver.Linear.MaxRestarts                           2
 
 ###Test Settings
-pfset Solver.Nonlinear.UseJacobian                       $UseJacobian 
+pfset Solver.Nonlinear.UseJacobian                       $UseJacobian
 pfset Solver.Nonlinear.EtaValue                          $EtaValue
 pfset Solver.Linear.Preconditioner                       $Preconditioner
 
@@ -508,7 +506,7 @@ if {[info exists PCMatrixType]} {
 }
 
 
-if {[info exists Smoother]} { 
+if {[info exists Smoother]} {
   pfset Solver.Linear.Preconditioner.$Preconditioner.Smoother         $Smoother
 }
 
@@ -552,7 +550,7 @@ file delete correct_output
 file link -symbolic correct_output "../correct_output"
 
 #-----------------------------------------------------------------------------
-# Run Simulation 
+# Run Simulation
 #-----------------------------------------------------------------------------
 set runname "LW"
 pfrun    $runname
@@ -568,7 +566,7 @@ set StartTime [expr int([pfget TimingInfo.StartTime])]
 set StopTime [expr int([pfget TimingInfo.StopTime])]
 
 set ClmVariables [list "eflx_lh_tot" "qflx_evap_soi" "swe_out" "eflx_lwrad_out" "qflx_evap_tot" "t_grnd" "eflx_sh_tot" "qflx_evap_veg" "t_soil" "eflx_soil_grnd" "qflx_infl" "qflx_evap_grnd" "qflx_tran_veg" ]
-for {set i $StartTime} { $i <= $StopTime } {incr i} { 
+for {set i $StartTime} { $i <= $StopTime } {incr i} {
     set step [format "%05d" $i]
     foreach variable $ClmVariables {
         pfundist $runname.out.$variable.$step.pfb
@@ -587,7 +585,7 @@ for {set i $StartTime} { $i <= $StopTime } {incr i} {
 # pfdist press.init.pfb
 
 # #-----------------------------------------------------------------------------
-# # Run Simulation 
+# # Run Simulation
 # #-----------------------------------------------------------------------------
 # set runname "LW"
 # puts $runname
