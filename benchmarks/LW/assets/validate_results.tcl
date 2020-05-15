@@ -15,7 +15,7 @@ if ![pftestFile $runname.out.press.00000.pfb "Max difference in Pressure" $sig_d
     set passed 0
 }
 
-set status [catch { exec python3 ../pfbdiff.py -q -e=1e-$py_test_epsilon $runname.out.press.00000.pfb ./correct_output/$runname.out.press.00000.pfb } result]
+set status [catch { exec python3 pfbdiff.py -q -e=1e-$py_test_epsilon $runname.out.press.00000.pfb ./correct_output/$runname.out.press.00000.pfb } result]
 if { $status != 0 } {
   set passed 0
   puts $result
@@ -25,7 +25,7 @@ if ![pftestFile $runname.out.satur.00000.pfb "Max difference in Saturation" $sig
     set passed 0
 }
 
-set status [catch { exec python3 ../pfbdiff.py -q -e=1e-$py_test_epsilon ./$runname.out.satur.00000.pfb ./correct_output/$runname.out.satur.00000.pfb } result]
+set status [catch { exec python3 pfbdiff.py -q -e=1e-$py_test_epsilon ./$runname.out.satur.00000.pfb ./correct_output/$runname.out.satur.00000.pfb } result]
 if { $status != 0 } {
   set passed 0
   puts $result
