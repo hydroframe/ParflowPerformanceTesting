@@ -326,24 +326,57 @@ pfset Geom.domain.ICPressure.RefPatch                   z-upper
 # Outputs
 # ------------------------------------------------------------
 #Writing output (all pfb):
+pfset Solver.PrintCLM                                 False
+pfset Solver.PrintConcentration                       False
+pfset Solver.PrintDZMultiplier                        False
+pfset Solver.PrintEvapTrans                           False
+pfset Solver.PrintEvapTransSum                        False
+pfset Solver.PrintLSMSink                             False
+pfset Solver.PrintMannings                            False
+pfset Solver.PrintMask                                False
+pfset Solver.PrintOverlandBCFlux                      False
+pfset Solver.PrintOverlandSum                         False
+pfset Solver.PrintPressure                            False
+pfset Solver.PrintSaturation                          False
+pfset Solver.PrintSlopes                              False
+pfset Solver.PrintSpecificStorage                     False
 pfset Solver.PrintSubsurfData                         False
-pfset Solver.PrintPressure                            True
-pfset Solver.PrintSaturation                          True
-pfset Solver.PrintMask                                True
+pfset Solver.PrintTop                                 False
+pfset Solver.PrintVelocities                          False
+pfset Solver.PrintWells                               False
 
 pfset Solver.WriteCLMBinary                           False
-pfset Solver.PrintCLM                                 True
-pfset Solver.WriteSiloSpecificStorage                 False
-pfset Solver.WriteSiloMannings                        False
-pfset Solver.WriteSiloMask                            False
-pfset Solver.WriteSiloSlopes                          False
-pfset Solver.WriteSiloSubsurfData                     False
-pfset Solver.WriteSiloPressure                        False
-pfset Solver.WriteSiloSaturation                      False
+pfset Solver.WriteSiloCLM                             False
+pfset Solver.WriteSiloConcentration                   False
+pfset Solver.WriteSiloDZMultiplier                    False
 pfset Solver.WriteSiloEvapTrans                       False
 pfset Solver.WriteSiloEvapTransSum                    False
+pfset Solver.WriteSiloMannings                        False
+pfset Solver.WriteSiloMask                            False
+pfset Solver.WriteSiloOverlandBCFlux                  False
 pfset Solver.WriteSiloOverlandSum                     False
-pfset Solver.WriteSiloCLM                             False
+pfset Solver.WriteSiloPMPIOConcentration              False
+pfset Solver.WriteSiloPMPIODZMultiplier               False
+pfset Solver.WriteSiloPMPIOEvapTrans                  False
+pfset Solver.WriteSiloPMPIOEvapTransSum               False
+pfset Solver.WriteSiloPMPIOMannings                   False
+pfset Solver.WriteSiloPMPIOMask                       False
+pfset Solver.WriteSiloPMPIOOverlandBCFlux             False
+pfset Solver.WriteSiloPMPIOOverlandSum                False
+pfset Solver.WriteSiloPMPIOPressure                   False
+pfset Solver.WriteSiloPMPIOSaturation                 False
+pfset Solver.WriteSiloPMPIOSlopes                     False
+pfset Solver.WriteSiloPMPIOSpecificStorage            False
+pfset Solver.WriteSiloPMPIOSubsurfData                False
+pfset Solver.WriteSiloPMPIOTop                        False
+pfset Solver.WriteSiloPMPIOVelocities                 False
+pfset Solver.WriteSiloPressure                        False
+pfset Solver.WriteSiloSaturation                      False
+pfset Solver.WriteSiloSlopes                          False
+pfset Solver.WriteSiloSpecificStorage                 False
+pfset Solver.WriteSiloSubsurfData                     False
+pfset Solver.WriteSiloTop                             False
+pfset Solver.WriteSiloVelocities                      False
 
 #-----------------------------------------------------------------------------
 # Exact solution specification for error calculations
