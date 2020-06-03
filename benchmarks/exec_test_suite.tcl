@@ -38,8 +38,8 @@ set suite_outputs [file join $suite_dir outputs ]
 source [ file join $suite_assets tests.tcl ]
 source [ file join $suite_assets test_config.tcl ]
 
-# Timestamp (month-day(no leadin zeros)-year(4 digit)_24hours(leading zeros)-minute-seconds)
-set time_stamp [clock format [clock seconds] -format %m-%e-%Y_%H-%M-%S]
+# Timestamp (month-day-year(4 digit)_24hours-minute-seconds)
+set time_stamp [clock format [clock seconds] -format %m-%d-%Y_%H-%M-%S]
 # Random 5 character alpha-numeric string
 set rand_suffix [randomRangeString 5]
 set unique_name "${time_stamp}_${rand_suffix}"
