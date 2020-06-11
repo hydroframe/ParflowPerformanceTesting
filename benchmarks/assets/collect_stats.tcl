@@ -1,16 +1,30 @@
+# @IJB This is stupid. I wrote this with 8.6 in mind, but 8.5 doesnt have lmap
+if { [info tclversion] < 8.6 } {
+  # Shamelessly stolen from https://en.wikibooks.org/wiki/Tcl_Programming/Examples
+  proc lmap {_var list body} {
+    upvar 1 $_var var
+    set res {}
+    foreach var $list {lappend res [uplevel 1 $body]}
+    set res
+  }
+}
+
 set output_file [open results.csv w]
 source test_config.tcl
 
 proc parse_time { time_string } {
-    #get the elapsed time (sec) from either /usr/bin/time output format (h:mm:ss or m:ss)
-    set time_array [split $time_string ":"]
-    set total_sec 0.0
-    if { [llength $time_array] == 2 } {
-        set total_sec [expr  [expr [lindex $time_array 0] * 60] + [lindex $time_array 1]]
-    } elseif { [llength $time_array] == 3 } {
-        scan [lindex $time_array 1] %d minutes
-        set total_sec [expr  [expr [lindex $time_array 0] * 3600] + [expr $minutes * 60 ]  +[expr [lindex $time_array 2] ] ]
-    }
+    # Get the elapsed time (sec) from either /usr/bin/time output format (h:mm:ss or m:ss)
+
+    # Produce list of floating point values in ascending order: seconds, minutes, and hours (if an hours measurement was listed)
+    set time_array [lreverse [lmap str_val [split $time_string ":"] {scan $str_val %f} ]]
+
+    set seconds [lindex $time_array 0]
+    set minutes [lindex $time_array 1]
+    # Need to check that there was a hours component
+    set hours   [if {[llength $time_array] >= 3} {lindex $time_array 2} {expr 0.0}]
+
+    set total_sec [expr $seconds + ($minutes * 60) + ($hours * 60 * 60)]
+
     return $total_sec
 }
 
