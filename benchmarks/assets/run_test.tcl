@@ -1,3 +1,6 @@
+lappend auto_path $env(PARFLOW_DIR)/bin
+package require parflow
+namespace import Parflow::*
 
 # @IJB This is stupid. I wrote this with 8.6 in mind, but 8.5 doesnt have lmap
 if { [info tclversion] < 8.6 } {
@@ -103,12 +106,30 @@ proc run_test { test_directory P Q R T } {
     # Copy the output files of interest back for logging.
     file copy -force {*}$per_trial_files $trial_directory
 
+    # copy hpctoolkit directory if it exists
+    set hpc_toolkit_outputs [glob -nocomplain [file join $output_dir hpctoolkit]*]
+    if { [llength $hpc_toolkit_outputs] > 0 } {
+      file copy -force {*}$hpc_toolkit_outputs $trial_directory
+    }
+
     if { $i == 1 } {
       # Copy the parflow databases and metadata settings for this run back for logging.
       # Unnecessary to copy on a per-trial basis. Only do on first trial.
       # Note, done in here so that outputs directory can be deleted after each
       # run
       file copy -force {*}$per_test_files $test_directory
+
+      # if hpctoolkit stuff exists, create and copy hpcstruct file for this configuration
+      if { [llength $hpc_toolkit_outputs] > 0 } {
+        set parflow_path [file join $Parflow::PARFLOW_DIR bin parflow]
+        set hpcstruct_file [file join $test_directory parflow.hpcstruct]
+
+        exec hpcstruct $parflow_path -o $hpcstruct_file >&@stdout
+
+        if { ! [file exists $hpcstruct_file] } {
+          puts "Could not create hpcstruct file"
+        }
+      }
     }
 
     # Delete outputs directory at the end of the trial
