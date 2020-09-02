@@ -12,7 +12,7 @@ if { [info tclversion] < 8.6 } {
 }
 
 # Expand command line arguments to individual variables
-lassign $argv suite P Q R T
+lassign $argv suite P Q R T upload
 
 # Shamelessly stolen from: https://wiki.tcl-lang.org/page/Generating+random+strings
 proc randomRangeString {length {chars "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"}} {
@@ -89,4 +89,4 @@ foreach dir $solver_configs {
 cd $unique_dir
 
 puts "running"
-exec tclsh run_tests.tcl $P $Q $R $T >@stdout
+exec tclsh run_tests.tcl $P $Q $R $T $upload >@stdout

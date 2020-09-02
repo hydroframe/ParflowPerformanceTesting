@@ -13,7 +13,7 @@ if { [info tclversion] < 8.6 } {
 #
 # run parflow script with test specific solver settings#
 #
-proc run_test { test_directory P Q R T } {
+proc run_test { test_directory P Q R T upload} {
   # test_directory - directory where solver settings stored
   # P - Processor count for X
   # Q - Processor count for Y
@@ -40,7 +40,7 @@ proc run_test { test_directory P Q R T } {
   # assets that will need to be moved into the test_dir before running
   set test_dir_assets [concat [file join $test_directory/solver_params.tcl] [lmap file "$scriptname delete_logs.tcl" {file join $test_root_directory $file}]]
   # Assets that will need to be moved into the output_dir after running
-  set output_dir_assets [lmap file "pftest.tcl pfbdiff.py validate_results.tcl" {file join $test_root_directory $file}]
+  set output_dir_assets [lmap file "pftest.tcl pfbdiff.py validate_results.tcl post_run_uploader.py" {file join $test_root_directory $file}]
 
   # Output files
   # Files to only copy once
@@ -111,6 +111,17 @@ proc run_test { test_directory P Q R T } {
       file copy -force {*}$per_test_files $test_directory
     }
 
+    # check if upload flag set, upload results 
+    if { $upload > 0 } { 
+    # upload the trial results
+      puts "uploading results to database..."
+      set status [catch { exec python3 $output_dir/post_run_uploader.py -p $output_dir -r $runname } result]
+        if { $status != 0 } {
+            set passed 0
+          puts $result
+        }
+    }
+
     # Delete outputs directory at the end of the trial
     file delete -force $output_dir
   }
@@ -119,8 +130,8 @@ proc run_test { test_directory P Q R T } {
 }
 
 # for calling script from command line
-if { $argc == 5 } {
-  lassign $argv test_directory P Q R T
+if { $argc == 6 } {
+  lassign $argv test_directory P Q R T upload
   set test_path [file join [pwd] $test_directory]
-  run_test $test_path $P $Q $R $T
+  run_test $test_path $P $Q $R $T $upload
 }

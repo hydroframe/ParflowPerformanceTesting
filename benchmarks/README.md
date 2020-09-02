@@ -27,7 +27,7 @@
 ## QUICKSTART
 From this directory, run:
 ```
-$ tclsh exec_test_suite.tcl LW 1 1 1 12
+$ tclsh exec_test_suite.tcl LW 1 1 1 12 0
 ```
 
 ## RUNNING
@@ -41,10 +41,10 @@ $ tclsh exec_test_suite.tcl LW 1 1 1 12
 
  To run all the test cases for a Domain, from this folder run 
  ```bash
- $ tclsh exec_test_suite.tcl domainName P Q R T
+ $ tclsh exec_test_suite.tcl domainName P Q R T U
  ```
  where domainName is the name of a Domain SubFolder and P Q R are integers which define the computation grid,
- and T is the StopTime you want the simulation to use.
+ T is the StopTime you want the simulation to use, and U is an integer specifying to upload the results or not.
  
   
 

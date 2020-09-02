@@ -16,7 +16,7 @@ lappend   auto_path $env(PARFLOW_DIR)/bin
 source run_test.tcl
 source test_config.tcl
 
-lassign $argv P Q R T
+lassign $argv P Q R T upload
 
 # Collect case* directories
 set case_dirs [lsort [glob -nocomplain -type d case*]]
@@ -26,9 +26,9 @@ if { [llength $case_dirs] > 0 } {
     puts "Running tests..."
     foreach dir $case_dirs {
         puts "  - Running $dir"
-        # Set pat to test directory and run test
-        set test_path [file normalize $dir]
-        run_test $test_path $P  $Q  $R $T
+        # Set path to test directory and run test
+        set test_path [file normalize $dir]        
+        run_test $test_path $P  $Q  $R $T $upload
     }
     puts "Finished tests."
 } else {
