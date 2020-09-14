@@ -24,18 +24,9 @@ def is_valid_file(parser, arg):
 
 # make connection to mongodb
 def connect_to_perf_test(custom_connection):
-    # check for custom connection string
-    if custom_connection is None:
-        # no custom string, connect as usual
-        client = MongoClient(
-            'mongodb+srv://benchmarkuploaduser:gV%5E6X9%263Knve@cluster0.h5qjy.mongodb.net/perf_test?retryWrites=true&w=majority')
-        return client.perf_test
-    else:
-        # custom string from custom file
-        # connection_file = open(custom_connection, 'r')
-        connection_string = custom_connection.readline()
-        client = MongoClient(connection_string)
-        return client.perf_test
+    connection_string = custom_connection.readline()
+    client = MongoClient(connection_string)
+    return client.perf_test
 
 
 # build the test results doc
@@ -86,8 +77,8 @@ def parse_args():
                         help="The directory containing runname.out.pfmetadata and LW.out.timing.csv")
     parser.add_argument("--runname", "-r", dest="runname", required=True,
                         help="The runname of the ParFlow model run")
-    parser.add_argument("--mongostring", "-m", dest="mongostring", required=False,
-                        default=None, type=lambda x: is_valid_file(parser, x),
+    parser.add_argument("--mongostring", "-m", dest="mongostring", required=True,
+                        type=lambda x: is_valid_file(parser, x),
                         help="The exact path of a txt file containing cusotom mongo connection string")
     return parser.parse_args()
 

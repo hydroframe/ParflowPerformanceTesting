@@ -115,11 +115,15 @@ proc run_test { test_directory P Q R T upload} {
     if { $upload > 0 } { 
     # upload the trial results
       puts "uploading results to database..."
-      set status [catch { exec python3 $output_dir/post_run_uploader.py -p $output_dir -r $runname } result]
-        if { $status != 0 } {
-            set passed 0
-          puts $result
-        }
+      if { [info exists ::env(MONGO_CONNECTION)] } {
+        set status [catch { exec python3 $output_dir/post_run_uploader.py -p $output_dir -r $runname -m $::env(MONGO_CONNECTION) } result]
+          if { $status != 0 } {
+              set passed 0
+            puts $result
+          }
+      } else {
+          puts "environment variable 'MONGO_CONNECTION' not set. aborting upload."
+      }
     }
 
     # Delete outputs directory at the end of the trial
