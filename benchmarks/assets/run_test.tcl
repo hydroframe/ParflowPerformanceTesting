@@ -116,7 +116,7 @@ proc run_test { test_directory P Q R T upload} {
     # upload the trial results
       puts "uploading results to database..."
       if { [info exists ::env(MONGO_CONNECTION)] } {
-        set status [catch { exec python3 $output_dir/post_run_uploader.py -p $output_dir -r $runname -m $::env(MONGO_CONNECTION) } result]
+        set status [catch { exec python3 $output_dir/post_run_uploader.py -p $output_dir -s $test_directory -m $::env(MONGO_CONNECTION) } result]
           if { $status != 0 } {
               set passed 0
             puts $result
