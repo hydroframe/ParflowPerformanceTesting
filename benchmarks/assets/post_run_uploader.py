@@ -188,18 +188,22 @@ def read_and_parse_log(solver_config_name, run_info):
             currLine = fp.readline()
 
     #get path to validation file
+    validation_path = os.path.abspath(os.path.join("../"))
     path_to_validation = None
-    for root, dirs, files in os.walk(solver_config_name):
+    for root, dirs, files in os.walk(validation_path):
         if "validation.log" in files:
             path_to_validation = os.path.join(root, "validation.log")
 
     #get validation results
     with open(path_to_validation) as fp:
-        currLine = fp.readline()
-        if "PASSED" in currLine:
-            run_info["run_information"]["run_specifications"]["test_results"] = "PASSED"
-        elif "FAILED" in currLine:
-            run_info["run_information"]["run_specifications"]["test_results"] = "FAILED"
+        lines = fp.readlines()
+        domain = run_info["run_information"]["run_specifications"]["domain"]
+        #iterate through all the lines looking for the final passed or failed
+        for line in lines:
+            if f"{domain} : PASSED" in line:
+                run_info["run_information"]["run_specifications"]["test_results"] = "PASSED"
+            if f"{domain} : FAILED" in line:
+                run_info["run_information"]["run_specifications"]["test_results"] = "FAILED"
 
 
 # Parse the commandline args
