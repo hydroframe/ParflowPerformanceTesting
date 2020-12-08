@@ -6,7 +6,6 @@ import argparse
 from pymongo import MongoClient
 from datetime import datetime
 
-
 # check for vaild file path
 def is_valid_path(parser, arg):
     if not os.path.isdir(arg):
@@ -134,15 +133,11 @@ def parse_specs_linux(run_info):
     mem_bytes = os.sysconf('SC_PAGE_SIZE') * os.sysconf('SC_PHYS_PAGES')
     sys_spec_dict["total_memory_KB"] = int(mem_bytes/(1024.))
 
-def read_and_parse_log(solver_config_name, run_info):
+def read_and_parse_log(abs_paths_doc, run_info):
     #get test_case.log info
 
-    #these bring me to top level
-    parent_of_parent = os.path.abspath(os.path.join(os.getcwd(), os.pardir))
-    test_case_path = os.path.join(parent_of_parent, f"{solver_config_name}/test_case.log")
-
     #parse test_case.log for start time and processor topology
-    with open(test_case_path) as fp:
+    with open(abs_paths_doc['test_case.log']) as fp:
         currLine = fp.readline()
         while "MachineName" not in currLine:
             #check for elements i'm looking for
@@ -159,43 +154,8 @@ def read_and_parse_log(solver_config_name, run_info):
                 run_info["run_information"]["run_specifications"]["processor_topology"] = temp_string_list[1].strip('\n ')
             currLine = fp.readline()
 
-    #get domain name
-    domain_name_path = os.path.abspath(os.path.join("../../../"))
-    domain = os.path.basename(domain_name_path)
-    run_info["run_information"]["run_specifications"]["domain"] = domain
-
-    #assign solver config name
-    run_info["run_information"]["run_specifications"]["solver_config"] = os.path.basename(solver_config_name)
-
-    #grab timesteps from {domain}.out.log
-    path_to_log_out = None
-    for root, dirs, files in os.walk(solver_config_name):
-        if f"{domain}.out.log" in files:
-            path_to_log_out = os.path.join(root, f"{domain}.out.log")
-    
-    #Open the log file containing timesteps
-    with open(path_to_log_out) as fp:
-        currLine = fp.readline()
-        #Search for the timesteps line
-        flag = True
-        while flag:
-            if "Total Timesteps" in currLine:
-                flag = False
-                temp_string = currLine.strip(" ")
-                temp_list = temp_string.split(":")
-                temp_list[1] = temp_list[1].lstrip(' ')
-                run_info["run_information"]["run_specifications"]["timesteps"] = str(temp_list[1].strip('\n'))
-            currLine = fp.readline()
-
-    #get path to validation file
-    validation_path = os.path.abspath(os.path.join("../"))
-    path_to_validation = None
-    for root, dirs, files in os.walk(validation_path):
-        if "validation.log" in files:
-            path_to_validation = os.path.join(root, "validation.log")
-
     #get validation results
-    with open(path_to_validation) as fp:
+    with open(abs_paths_doc['validation.log']) as fp:
         lines = fp.readlines()
         domain = run_info["run_information"]["run_specifications"]["domain"]
         #iterate through all the lines looking for the final passed or failed
@@ -205,13 +165,41 @@ def read_and_parse_log(solver_config_name, run_info):
             if f"{domain} : FAILED" in line:
                 run_info["run_information"]["run_specifications"]["test_results"] = "FAILED"
 
+def build_paths_doc(solver_config_path, run_info):
+    paths_doc = {
+        'test_case.log': "",
+        'validation.log': "",
+        'pfmetadata': "",
+        'timing_csv': "",
+    }
+
+    domainName = None
+    solverConfig = os.path.basename(solver_config_path)
+
+    for root, dirs, files in os.walk(solver_config_path):
+        for mfile in files:
+            if ".out.pfmetadata" in mfile:
+                paths_doc['pfmetadata'] = os.path.join(root, mfile)
+                domainName = mfile.split(".")[0]
+            if "test_case.log" in mfile:
+                paths_doc['test_case.log'] = os.path.join(root, mfile)
+            if ".out.timing.csv" in mfile:
+                paths_doc['timing_csv'] = os.path.join(root, mfile)
+            if "validation.log" in mfile:
+                paths_doc['validation.log'] = os.path.join(root, mfile)
+
+    for doc in paths_doc:
+        if paths_doc[doc] == "":
+            print("File not found: " + doc)
+
+    run_info['run_information']['run_specifications']['domain'] = domainName
+    run_info['run_information']['run_specifications']['solver_config'] = solverConfig
+
+    return paths_doc
 
 # Parse the commandline args
 def parse_args():
     parser = argparse.ArgumentParser(description='Submit documents to the Hydroframe MongoDB')
-    parser.add_argument("--path", "-p", dest="input_path", required=True,
-                        type=lambda x: is_valid_path(parser, x),
-                        help="The directory containing runname.out.pfmetadata and runname.out.timing.csv")
     parser.add_argument("--solverconfig", "-s", dest="solverconfig", required=True,
                         help="The solver config used on the current Parflow run")
     parser.add_argument("--mongostring", "-m", dest="mongostring", required=True,
@@ -238,14 +226,24 @@ def main():
     if(platform.system() == "Linux"):
         parse_specs_linux(run_info)
     
-    #pull run_information
-    read_and_parse_log(args.solverconfig, run_info)
+    #build absolute paths doc for direct access
+    abs_paths_doc = build_paths_doc(args.solverconfig, run_info)
 
+    #pull run_information
+    read_and_parse_log(abs_paths_doc, run_info)
 
     # Pull in output files from parflow
-    run_name = run_info["run_information"]["run_specifications"]["domain"]
-    test_doc = read_pf_metadata_file(os.path.join(args.input_path, f"{run_name}.out.pfmetadata"))
-    csv_doc = read_timing_csv(os.path.join(args.input_path, f"{run_name}.out.timing.csv"))
+    test_doc = read_pf_metadata_file(abs_paths_doc['pfmetadata'])
+    csv_doc = read_timing_csv(abs_paths_doc['timing_csv'])
+
+    #get timesteps
+    timestepStart = test_doc['pfmetadata']['inputs']['configuration']['data']['TimingInfo[dot]StartTime']
+    timestepStop = test_doc['pfmetadata']['inputs']['configuration']['data']['TimingInfo[dot]StopTime']
+    timestepUnit = test_doc['pfmetadata']['inputs']['configuration']['data']['TimeStep[dot]Value']
+    timesteps = float((float(timestepStop) - float(timestepStart)) / float(timestepUnit))
+
+    #set timesteps
+    run_info["run_information"]["run_specifications"]["timesteps"] = timesteps
 
 
     # append docs to doc to be inserted
